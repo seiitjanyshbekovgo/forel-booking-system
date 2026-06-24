@@ -16,7 +16,7 @@ function Admin() {
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/bookings");
+      const res = await axios.get("https://forel-booking-system.onrender.com/bookings");
       setBookings(res.data);
     } catch (error) {
       console.log(error);
@@ -59,7 +59,7 @@ function Admin() {
 
   const updateStatus = async (id, status) => {
     try {
-      await axios.put(`http://localhost:8000/booking/${id}/status`, { status });
+      await axios.put(`https://forel-booking-system.onrender.com/bookings/${id}/status`, { status });
 
       fetchBookings();
     } catch (error) {
@@ -68,7 +68,7 @@ function Admin() {
   };
   const deleteBooking = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/booking/${id}`);
+      await axios.delete(`https://forel-booking-system.onrender.com/bookings/${id}`);
 
       fetchBookings();
     } catch (error) {

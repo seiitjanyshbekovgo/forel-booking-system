@@ -85,7 +85,7 @@ function TableDetails() {
 
     localStorage.setItem("bookings", JSON.stringify(oldBookings));
 
-    await fetch("http://localhost:8000/booking", {
+    await fetch("https://forel-booking-system.onrender.com/bookings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -8,7 +8,7 @@ function BookingStatus() {
 
   const checkBooking = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/bookings");
+      const res = await axios.get("https://forel-booking-system.onrender.com/bookings");
 
       const foundBookings = res.data.filter((item) => item.phone === phone);
 
