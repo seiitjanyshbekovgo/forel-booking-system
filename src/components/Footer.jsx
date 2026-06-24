@@ -19,11 +19,15 @@ function Footer() {
         <div className="footer-section">
           <h3>Социальные сети</h3>
 
-          <a href="https://instagram.com/" target="_blank" rel="noreferrer">
+          <a
+            href="https://www.instagram.com/forel_nomer_1?igsh=cmRrcm0zbmQ3bHJz/"
+            target="_blank"
+            rel="noreferrer"
+          >
             Instagram
           </a>
 
-          <a href="https://wa.me/996999999999" target="_blank" rel="noreferrer">
+          <a href="https://wa.me/996701040606" target="_blank" rel="noreferrer">
             WhatsApp
           </a>
         </div>
