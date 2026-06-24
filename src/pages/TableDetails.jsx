@@ -85,7 +85,7 @@ function TableDetails() {
 
     localStorage.setItem("bookings", JSON.stringify(oldBookings));
 
-    await fetch("https://forel-booking-system.onrender.com/bookings", {
+    await fetch("https://forel-booking-system.onrender.com/booking", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -232,8 +232,9 @@ function TableDetails() {
                 marginBottom: "15px",
               }}
             >
-              💳 Предоплата: 1500 сом <br /> MBANK: +996 999 76 60 50 <br /> <br />Предоплата
-              төлөнгөндөн кийин администратор бронду ырастайт.
+              💳 Предоплата: 1500 сом <br /> MBANK: +996 999 76 60 50 <br />{" "}
+              <br />
+              Предоплата төлөнгөндөн кийин администратор бронду ырастайт.
             </div>
 
             <div
@@ -250,7 +251,10 @@ function TableDetails() {
                 onChange={(e) => setIsPaid(e.target.checked)}
               />
 
-              <span>Предоплата <br />успешно оплачена.</span>
+              <span>
+                Предоплата <br />
+                успешно оплачена.
+              </span>
             </div>
             <input
               type="text"
