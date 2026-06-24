@@ -59,7 +59,7 @@ function Admin() {
 
   const updateStatus = async (id, status) => {
     try {
-      await axios.put(`https://forel-booking-system.onrender.com/bookings/${id}/status`, { status });
+      await axios.put(`https://forel-booking-system.onrender.com/booking/${id}/status`, { status });
 
       fetchBookings();
     } catch (error) {
@@ -68,7 +68,7 @@ function Admin() {
   };
   const deleteBooking = async (id) => {
     try {
-      await axios.delete(`https://forel-booking-system.onrender.com/bookings/${id}`);
+      await axios.delete(`https://forel-booking-system.onrender.com/booking/${id}`);
 
       fetchBookings();
     } catch (error) {
