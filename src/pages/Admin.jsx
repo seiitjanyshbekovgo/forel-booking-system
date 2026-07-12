@@ -1,10 +1,15 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { branches } from "../data/branches";
 
 function Admin() {
   const navigate = useNavigate();
   const isAuth = sessionStorage.getItem("adminAuth");
+  const admin = JSON.parse(sessionStorage.getItem("admin"));
+
+  const adminBranch = admin.branch;
+  const currentBranch = branches.find((branch) => branch.slug === adminBranch);
 
   const [search, setSearch] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -16,7 +21,9 @@ function Admin() {
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get("https://forel-booking-system.onrender.com/bookings");
+      const res = await axios.get(
+        "https://forel-booking-system.onrender.com/bookings",
+      );
       setBookings(res.data);
     } catch (error) {
       console.log(error);
@@ -28,6 +35,9 @@ function Admin() {
   }
 
   const filteredBookings = bookings.filter((item) => {
+    if (item.branch !== adminBranch) {
+      return false;
+    }
     const matchesSearch =
       (item.name || "").toLowerCase().includes(search.toLowerCase()) ||
       (item.phone || "").includes(search) ||
@@ -59,7 +69,10 @@ function Admin() {
 
   const updateStatus = async (id, status) => {
     try {
-      await axios.put(`https://forel-booking-system.onrender.com/booking/${id}/status`, { status });
+      await axios.put(
+        `https://forel-booking-system.onrender.com/booking/${id}/status`,
+        { status },
+      );
 
       fetchBookings();
     } catch (error) {
@@ -68,7 +81,9 @@ function Admin() {
   };
   const deleteBooking = async (id) => {
     try {
-      await axios.delete(`https://forel-booking-system.onrender.com/booking/${id}`);
+      await axios.delete(
+        `https://forel-booking-system.onrender.com/booking/${id}`,
+      );
 
       fetchBookings();
     } catch (error) {
@@ -78,7 +93,7 @@ function Admin() {
 
   return (
     <div style={{ padding: "40px" }}>
-      <h1>FOREL</h1>
+     <h1>{currentBranch?.name || "FOREL"}</h1>
 
       <div className="stats">
         <div>📋 все бронирование: {totalBookings}</div>

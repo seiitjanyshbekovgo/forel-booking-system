@@ -1,5 +1,5 @@
+import { useState } from "react";
 import Header from "../components/Header";
-import { useParams } from "react-router-dom";
 import table1 from "../assets/table1.jpg";
 import table2 from "../assets/table2.jpg";
 import table3 from "../assets/table3.jpg";
@@ -13,17 +13,30 @@ import table10 from "../assets/table10.jpg";
 import table11 from "../assets/table11.jpg";
 import vip from "../assets/vip.jpg";
 import bigCabin from "../assets/bigCabin.jpg";
-import { useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { gorkiyTables } from "../data/tables/gorkiy";
+import { jalTables } from "../data/tables/jal";
+import { axunTables } from "../data/tables/axun";
+import { shopokTables } from "../data/tables/shopok";
+import { branches } from "../data/branches";
+import SuccessModal from "../components/SuccessModal";
 
 function TableDetails() {
-  const { id } = useParams();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("+996");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [isPaid, setIsPaid] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  //
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
+  const branch = searchParams.get("branch");
+  const currentBranch = branches.find((item) => item.slug === branch);
+  //
   const handleBooking = async () => {
     if (loading) return;
 
@@ -58,6 +71,7 @@ function TableDetails() {
 
     try {
       const newBooking = {
+        branch,
         table: table.name,
         name,
         phone,
@@ -65,6 +79,7 @@ function TableDetails() {
         time,
         status: "pending",
       };
+      console.log("NEW BOOKING:", newBooking);
 
       const oldBookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
@@ -95,7 +110,8 @@ function TableDetails() {
       localStorage.setItem("bookings", JSON.stringify(oldBookings));
 
       const response = await fetch(
-        "https://forel-booking-system.onrender.com/booking",
+        // "https://forel-booking-system.onrender.com/booking",
+        "http://localhost:8000/booking",
         {
           method: "POST",
           headers: {
@@ -109,9 +125,12 @@ function TableDetails() {
         throw new Error("Ошибка сервера");
       }
 
-      alert(
-        "Бронь принята! После проверки предоплаты администратор подтвердит бронирование. Проверить статус можно в разделе «Мои заявки».",
-      );
+      setShowSuccess(true);
+
+      setTimeout(() => {
+        setShowSuccess(false);
+        navigate("/");
+      }, 20000);
 
       setName("");
       setPhone("+996");
@@ -125,101 +144,28 @@ function TableDetails() {
       setLoading(false);
     }
   };
+  let tables = [];
 
-  const tables = [
-    {
-      id: 1,
-      name: "Стол 1",
-      seats: "4 мест",
-      location: "возле окны",
-      image: table1,
-    },
-    {
-      id: 2,
-      name: "Стол 2",
-      seats: "4 мест",
-      location: "возле окны",
-      image: table2,
-    },
-    {
-      id: 3,
-      name: "Стол 3",
-      seats: "4 мест",
-      location: "возле окны",
-      image: table3,
-    },
-    {
-      id: 4,
-      name: "Стол 4",
-      seats: "4 мест",
-      location: "возле окны",
-      image: table4,
-    },
-    {
-      id: 5,
-      name: "Стол 5",
-      seats: "4 мест",
-      location: "возле окны",
-      image: table5,
-    },
-    {
-      id: 6,
-      name: "Стол 6",
-      seats: "6 мест",
-      location: "возле аквариума",
-      image: table6,
-    },
-    {
-      id: 7,
-      name: "Стол 7",
-      seats: "4 мест",
-      location: "главный зал",
-      image: table7,
-    },
-    {
-      id: 8,
-      name: "Стол 8",
-      seats: "4 мест",
-      location: "главный зал",
-      image: table8,
-    },
-    {
-      id: 9,
-      name: "Стол 9",
-      seats: "4 мест",
-      location: "в краю",
-      image: table9,
-    },
-    {
-      id: 10,
-      name: "Стол 10",
-      seats: "6 местных",
-      location: "Где кабинки",
-      image: table10,
-    },
-    {
-      id: 11,
-      name: "Стол 11",
-      seats: "12 мест",
-      location: "где кабинки",
-      image: table11,
-    },
-    {
-      id: 12,
-      name: "VIP Кабина",
-      seats: "14 мест",
-      location: " VIP ",
-      image: vip,
-    },
-    {
-      id: 13,
-      name: "большая кабина",
-      seats: "25 местеных",
-      location: "для компашка",
-      image: bigCabin,
-    },
-  ];
+  switch (branch) {
+    case "gorkiy":
+      tables = gorkiyTables;
+      break;
 
+    case "jal":
+      tables = jalTables;
+      break;
+
+    case "axun":
+      tables = axunTables;
+      break;
+
+    case "shopok":
+      tables = shopokTables;
+      break;
+
+    default:
+      tables = [];
+  }
   const table = tables.find((item) => item.id === Number(id));
 
   return (
@@ -259,35 +205,6 @@ function TableDetails() {
 
           <div className="booking-form">
             <h5>Для бронирования стола заполните все необходимые поля.</h5>
-            {/* <div
-              style={{
-                background: "#fff3cd",
-                padding: "15px",
-                borderRadius: "10px",
-                marginBottom: "15px",
-              }}
-            >
-              💳 Предоплата: 1500 сом <br /> MBANK: +996 999 76 60 50 <br />{" "}
-              <br />
-              Предоплата төлөнгөндөн кийин администратор бронду ырастайт.
-            </div>
-
-            <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                marginBottom: "20px",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={isPaid}
-                onChange={(e) => setIsPaid(e.target.checked)}
-              />
-
-              <span>Предоплата успешно оплачена</span>
-            </label> */}
 
             <input
               type="text"
@@ -324,7 +241,6 @@ function TableDetails() {
               onChange={(e) => setTime(e.target.value)}
             />
 
-            {/* <h2>СТРОГО ПРЕДОПЛАТА</h2> */}
             <div
               style={{
                 background: "#b16666",
@@ -333,27 +249,13 @@ function TableDetails() {
                 marginBottom: "15px",
               }}
             >
-              💳 Предоплата: 1500 сом <br /> MBANK: +996 999 76 60 50 <br />{" "}
+              💳 Предоплата: {currentBranch.prepayment} сом
               <br />
-             После проверки предоплаты администратор подтвердит бронирование.
+              MBANK: {currentBranch.mbank}
+              <br />
+              <br />
+              После проверки предоплаты администратор подтвердит бронирование.
             </div>
-
-            {/* <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                marginBottom: "20px",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={isPaid}
-                onChange={(e) => setIsPaid(e.target.checked)}
-              />
-
-              <span>Предоплата успешно оплачена</span>
-            </label> */}
             <label
               style={{
                 display: "flex",
@@ -379,7 +281,9 @@ function TableDetails() {
           </div>
         </div>
       </div>
+      {showSuccess && <SuccessModal />}
     </>
+
   );
 }
 

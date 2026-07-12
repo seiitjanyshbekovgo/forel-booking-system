@@ -1,16 +1,30 @@
 import Header from "../components/Header";
 import { useState } from "react";
 import axios from "axios";
+import { branches } from "../data/branches";
 
 function BookingStatus() {
   const [bookings, setBookings] = useState([]);
   const [phone, setPhone] = useState("+996");
+  const [branch, setBranch] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const checkBooking = async () => {
-    try {
-      const res = await axios.get("https://forel-booking-system.onrender.com/bookings");
+    if (!branch) {
+      alert("Пожалуйста, сначала выберите филиал.");
+      return;
+    }
 
-      const foundBookings = res.data.filter((item) => item.phone === phone);
+    setLoading(true);
+
+    try {
+      const res = await axios.get(
+        "https://forel-booking-system.onrender.com/bookings",
+      );
+
+      const foundBookings = res.data.filter(
+        (item) => item.phone === phone && item.branch === branch,
+      );
 
       if (foundBookings.length === 0) {
         alert(
@@ -23,6 +37,8 @@ function BookingStatus() {
       setBookings(foundBookings);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,6 +55,19 @@ function BookingStatus() {
             вашей брони.
           </p>
           <div className="search-box">
+            <select
+              value={branch}
+              onChange={(e) => setBranch(e.target.value)}
+              className="booking-search-input"
+            >
+              <option value="">Выберите филиал</option>
+
+              {branches.map((item) => (
+                <option key={item.id} value={item.slug}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
             <input
               type="text"
               placeholder="+996999766050"
@@ -47,8 +76,12 @@ function BookingStatus() {
               className="booking-search-input"
             />
 
-            <button onClick={checkBooking} className="booking-search-btn">
-              Проверить
+            <button
+              onClick={checkBooking}
+              className="booking-search-btn"
+              disabled={loading}
+            >
+              {loading ? "⏳ Проверяем..." : "Проверить"}
             </button>
           </div>
 

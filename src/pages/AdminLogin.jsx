@@ -6,14 +6,44 @@ function AdminLogin() {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+  const admins = [
+    {
+      login: "горький",
+      password: "123456",
+      branch: "gorkiy",
+    },
+    {
+      login: "жал",
+      password: "123456",
+      branch: "jal",
+    },
+    {
+      login: "ахунбаева",
+      password: "123456",
+      branch: "axun",
+    },
+    {
+      login: "шопокова",
+      password: "123456",
+      branch: "shopok",
+    },
+  ];
 
   const handleLogin = () => {
-    if (login === "admin" && password === "1980") {
-      sessionStorage.setItem("adminAuth", "true");
-      navigate("/admin");
-    } else {
-      alert("Логин или пароль не провиьно!");
+    const admin = admins.find(
+      (item) => item.login === login && item.password === password,
+    );
+
+    if (!admin) {
+      alert("Логин или пароль неправильный!");
+      return;
     }
+
+    sessionStorage.setItem("adminAuth", "true");
+
+    sessionStorage.setItem("admin", JSON.stringify(admin));
+
+    navigate("/admin");
   };
 
   return (

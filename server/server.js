@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import Booking from "./models/Booking.js";
 
-dotenv.config();
+dotenv.config({ path: "../.env" });
 
 const app = express();
 
@@ -23,13 +23,15 @@ app.get("/", (req, res) => {
 
 // Жаңы бронь кошуу
 app.post("/booking", async (req, res) => {
+  console.log("REQ BODY:", req.body);
   try {
     console.log("BOOKING REQUEST RECEIVED");
-    console.log(req.body);
 
-    const { table, name, phone, date, time } = req.body;
+
+    const { branch, table, name, phone, date, time } = req.body;
 
     const booking = new Booking({
+      branch,
       table,
       name,
       phone,
@@ -41,6 +43,8 @@ app.post("/booking", async (req, res) => {
 
     const message = `
 📌 Новый бронь
+
+🏢 Филиал: ${branch}
 
 🍽 Стол: ${table}
 👤 Имя: ${name}

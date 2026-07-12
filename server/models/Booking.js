@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
   {
+    branch: String,
     table: String,
     name: String,
     phone: String,

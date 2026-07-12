@@ -12,6 +12,7 @@ import Branches from "./pages/Branches";
 import BookingStatus from "./pages/BookingStatus";
 
 import Footer from "./components/Footer";
+import SelectBranch from "./pages/SelectBranch";
 
 function AppContent() {
   const location = useLocation();
@@ -31,6 +32,7 @@ function AppContent() {
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/booking-status" element={<BookingStatus />} />
+        <Route path="/select-branch" element={<SelectBranch />} />
       </Routes>
 
       {!hideFooter && <Footer />}

@@ -970,3 +970,105 @@ nav a {
     transform: rotate(360deg);
   }
 }
+.branch-select-page {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.branch-select-page h1 {
+  font-size: 40px;
+  margin-bottom: 10px;
+  color: #1d1d1d;
+}
+
+.branch-select-page > p {
+  color: #666;
+  margin-bottom: 35px;
+}
+
+.branch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.branch-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 25px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: 0.3s;
+  border: 1px solid #ececec;
+}
+
+.branch-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.branch-card h2 {
+  margin-bottom: 12px;
+  color: #1b3dbf;
+  font-size: 30px;
+}
+
+.branch-card p {
+  margin: 6px 0;
+  color: #555;
+  font-size: 17px;
+}
+
+.select-btn {
+  background: #2f63ff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 15px 35px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.select-btn:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+  .branch-select-page {
+    padding: 15px;
+  }
+
+  .branch-select-page h1 {
+    font-size: 30px;
+  }
+
+  .branch-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .branch-card h2 {
+    font-size: 24px;
+  }
+
+  .branch-card p {
+    font-size: 15px;
+  }
+
+  .select-btn {
+    width: 100%;
+    font-size: 16px;
+    padding: 14px;
+  }
+}
+.booking-search-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

@@ -18,7 +18,7 @@ function Home() {
 
           <p>Онлайн бронирование</p>
 
-          <Link to="/tables">
+         <Link to="/select-branch">
             <button>бронирование стола</button>
           </Link>
         </div>
