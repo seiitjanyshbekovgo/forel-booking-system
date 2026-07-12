@@ -110,8 +110,8 @@ function TableDetails() {
       localStorage.setItem("bookings", JSON.stringify(oldBookings));
 
       const response = await fetch(
-        // "https://forel-booking-system.onrender.com/booking",
-        "http://localhost:8000/booking",
+        "https://forel-booking-system.onrender.com/booking",
+        // "http://localhost:8000/booking",
         {
           method: "POST",
           headers: {
