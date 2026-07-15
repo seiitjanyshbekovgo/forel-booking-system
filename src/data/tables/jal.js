@@ -30,7 +30,7 @@ export const jalTables = [
     {
       id: 3,
       name: "Стол 3",
-      seats: "4 м ст",
+      seats: "4 местный",
       // location: "строго по количество гостей",
       image: jal3,
     },

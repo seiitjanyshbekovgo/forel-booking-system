@@ -259,7 +259,7 @@ function TableDetails() {
                 onChange={(e) => setIsPaid(e.target.checked)}
               />
 
-              <span>Я оплатил предоплату.</span>
+              {/* <span>Я оплатил предоплату.</span> */}
             </label>
 
             <button onClick={handleBooking} disabled={loading}>
