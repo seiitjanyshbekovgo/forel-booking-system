@@ -1,8 +1,8 @@
-import Header from "../components/Header";
 import { Link, useSearchParams } from "react-router-dom";
+import Header from "../components/Header";
+import { axunTables } from "../data/tables/axun";
 import { gorkiyTables } from "../data/tables/gorkiy";
 import { jalTables } from "../data/tables/jal";
-import { axunTables } from "../data/tables/axun";
 import { shopokTables } from "../data/tables/shopok";
 
 function Tables() {
@@ -57,10 +57,13 @@ function Tables() {
                 <p>{table.seats}</p>
 
                 <p>{table.location}</p>
-
-                <Link to={`/table/${table.id}?branch=${branch}`}>
-                  <button>Посмотреть</button>
-                </Link>
+                {table.unavailable ? (
+                  <div className="table-warning">🔴  СТОЛ ВРЕМЕННО НЕ ДОСТУПЕН</div>
+                ) : (
+                  <Link to={`/table/${table.id}?branch=${branch}`}>
+                    <button>Посмотреть</button>
+                  </Link>
+                )}
               </div>
             );
           })}

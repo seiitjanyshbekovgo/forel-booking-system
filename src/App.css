@@ -1158,3 +1158,12 @@ body {
   }
 
 }
+.table-warning {
+  background: #ff4d4f;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 10px;
+}

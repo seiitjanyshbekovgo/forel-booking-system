@@ -1,25 +1,12 @@
 import { useState } from "react";
-import Header from "../components/Header";
-import table1 from "../assets/table1.jpg";
-import table2 from "../assets/table2.jpg";
-import table3 from "../assets/table3.jpg";
-import table4 from "../assets/table4.jpg";
-import table5 from "../assets/table5.jpg";
-import table6 from "../assets/table6.jpg";
-import table7 from "../assets/table7.jpg";
-import table8 from "../assets/table8.jpg";
-import table9 from "../assets/table9.jpg";
-import table10 from "../assets/table10.jpg";
-import table11 from "../assets/table11.jpg";
-import vip from "../assets/vip.jpg";
-import bigCabin from "../assets/bigCabin.jpg";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import Header from "../components/Header";
+import SuccessModal from "../components/SuccessModal";
+import { branches } from "../data/branches";
+import { axunTables } from "../data/tables/axun";
 import { gorkiyTables } from "../data/tables/gorkiy";
 import { jalTables } from "../data/tables/jal";
-import { axunTables } from "../data/tables/axun";
 import { shopokTables } from "../data/tables/shopok";
-import { branches } from "../data/branches";
-import SuccessModal from "../components/SuccessModal";
 
 function TableDetails() {
   const [name, setName] = useState("");
@@ -283,7 +270,6 @@ function TableDetails() {
       </div>
       {showSuccess && <SuccessModal />}
     </>
-
   );
 }
 

@@ -16,7 +16,7 @@ import SelectBranch from "./pages/SelectBranch";
 
 function AppContent() {
   const location = useLocation();
-  // test 
+
   const hideFooter =
     location.pathname === "/admin" || location.pathname === "/admin-login";
 
