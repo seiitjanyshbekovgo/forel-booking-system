@@ -100,7 +100,7 @@ export const shopokTables = [
   {
     id: 11,
     name: "Стол 11",
-    seats: "6 местный",
+    seats: "4 местный",
     // location: "где кабинки",
     image: shop11,
   },
@@ -114,7 +114,7 @@ export const shopokTables = [
   {
     id: 13,
     name: "Стол 13",
-    seats: " 4местный",
+    seats: " 4 местный",
     // location: " VIP ",
     image: shop13,
   },

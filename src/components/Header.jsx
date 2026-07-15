@@ -11,7 +11,7 @@ function Header() {
       <nav>
         <Link to="/">Главная</Link>
         <Link to="/branches">Филиалы</Link>
-        <Link to="/contact">Контакты</Link>
+        {/* <Link to="/contact">Контакты</Link> */}
         <Link to="/booking-status">Мои заявки</Link>
       </nav>
     </header>

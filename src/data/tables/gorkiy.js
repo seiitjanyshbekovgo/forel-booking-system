@@ -102,7 +102,7 @@ export const gorkiyTables = [
       id: 13,
       name: "большая кабина",
       seats: "25 местный",
-      location: "для компашка",
+      // location: "для компашка",
       locations: "строго по количество гостей",
       image: bigCabin,
     },
