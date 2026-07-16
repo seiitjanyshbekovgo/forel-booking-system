@@ -7,7 +7,7 @@ export const branches = [
     image: "",
     phone: "+996 701 04 06 06",
     prepayment: 1500,
-    mbank: "+996701040606",
+    mbank: "+996 999 76 60 50",
   },
   {
     id: 2,
@@ -17,7 +17,7 @@ export const branches = [
     image: "",
     phone: "+996 501 13 80 06",
     prepayment: 1500,
-    mbank: "+996501138006",
+    mbank: "+996 999 76 60 50",
   },
   {
     id: 3,
@@ -27,7 +27,7 @@ export const branches = [
     image: "",
     phone: "+996 507 08 06 06",
     prepayment: 1500,
-    mbank: "+996507080606",
+    mbank: "+996 999 76 60 50",
   },
   {
     id: 4,
@@ -37,6 +37,6 @@ export const branches = [
     image: "",
     phone: "+996 505 06 06 55",
     prepayment: 1500,
-    mbank: "+996505060655",
+    mbank: "+996 999 76 60 50",
   },
 ];
