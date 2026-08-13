@@ -15,18 +15,26 @@ function Admin() {
   const [selectedDate, setSelectedDate] = useState("");
   const [bookings, setBookings] = useState([]);
 
+  // Loading
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     fetchBookings();
   }, []);
 
   const fetchBookings = async () => {
+    setLoading(true);
+
     try {
       const res = await axios.get(
         "https://forel-booking-system.onrender.com/bookings",
       );
+
       setBookings(res.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,12 +46,14 @@ function Admin() {
     if (item.branch !== adminBranch) {
       return false;
     }
+
     const matchesSearch =
       (item.name || "").toLowerCase().includes(search.toLowerCase()) ||
       (item.phone || "").includes(search) ||
       (item.table || "").toLowerCase().includes(search.toLowerCase());
 
-    const matchesDate = selectedDate === "" || item.date === selectedDate;
+    const matchesDate =
+      selectedDate === "" || item.date === selectedDate;
 
     return matchesSearch && matchesDate;
   });
@@ -79,6 +89,7 @@ function Admin() {
       console.log(error);
     }
   };
+
   const deleteBooking = async (id) => {
     try {
       await axios.delete(
@@ -92,92 +103,158 @@ function Admin() {
   };
 
   return (
-    <div style={{ padding: "40px" }}>
-     <h1>{currentBranch?.name || "FOREL"}</h1>
+    <>
+      {/* =========================
+          LOADING OVERLAY
+      ========================= */}
+      {loading && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.25)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 99999,
+          }}
+        >
+          <div
+            style={{
+              width: "55px",
+              height: "55px",
+              border: "6px solid rgba(255, 255, 255, 0.5)",
+              borderTop: "6px solid white",
+              borderRadius: "50%",
+              animation: "admin-loading-spin 0.8s linear infinite",
+            }}
+          />
+        </div>
+      )}
 
-      <div className="stats">
-        <div>📋 все бронирование: {totalBookings}</div>
-        <div>✅ Подтверждено: {acceptedBookings}</div>
-        <div>⏳ в ожидании: {pendingBookings}</div>
-        <div>❌ Отклонено: {rejectedBookings}</div>
-      </div>
+      {/* =========================
+          ADMIN PANEL
+      ========================= */}
+      <div style={{ padding: "40px" }}>
+        <h1>{currentBranch?.name || "FOREL"}</h1>
 
-      <div className="filters">
-        <input
-          type="text"
-          placeholder="Поиск..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="stats">
+          <div>📋 все бронирование: {totalBookings}</div>
 
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-        />
+          <div>✅ Подтверждено: {acceptedBookings}</div>
 
-        <button className="logout-btn" onClick={handleLogout}>
-          🚪 Выйти
-        </button>
-      </div>
+          <div>⏳ в ожидании: {pendingBookings}</div>
 
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>Стол</th>
-            <th>Имя</th>
-            <th>Телефон</th>
-            <th>Дата</th>
-            <th>Время</th>
-            <th>Статус</th>
-            <th>Процесс</th>
-          </tr>
-        </thead>
+          <div>❌ Отклонено: {rejectedBookings}</div>
+        </div>
 
-        <tbody>
-          {filteredBookings.map((item) => (
-            <tr key={item._id}>
-              <td>{item.table}</td>
-              <td>{item.name}</td>
-              <td>{item.phone}</td>
-              <td>{item.date}</td>
-              <td>{item.time}</td>
+        <div className="filters">
+          <input
+            type="text"
+            placeholder="Поиск..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
-              <td>
-                {item.status === "accepted"
-                  ? "✅ принято"
-                  : item.status === "rejected"
-                    ? "❌ отказано"
-                    : "⏳ в ожидании"}
-              </td>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+          />
 
-              <td>
-                <button
-                  className="accept-btn"
-                  onClick={() => updateStatus(item._id, "accepted")}
-                >
-                  принять
-                </button>
+          <button className="logout-btn" onClick={handleLogout}>
+            🚪 Выйти
+          </button>
+        </div>
 
-                <button
-                  className="reject-btn"
-                  onClick={() => updateStatus(item._id, "rejected")}
-                >
-                  отменить
-                </button>
-
-                <button
-                  className="delete-btn"
-                  onClick={() => deleteBooking(item._id)}
-                >
-                  очистить
-                </button>
-              </td>
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Стол</th>
+              <th>Имя</th>
+              <th>Телефон</th>
+              <th>Дата</th>
+              <th>Время</th>
+              <th>Статус</th>
+              <th>Процесс</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+
+          <tbody>
+            {filteredBookings.map((item) => (
+              <tr key={item._id}>
+                <td>{item.table}</td>
+
+                <td>{item.name}</td>
+
+                <td>{item.phone}</td>
+
+                <td>{item.date}</td>
+
+                <td>{item.time}</td>
+
+                <td>
+                  {item.status === "accepted"
+                    ? "✅ принято"
+                    : item.status === "rejected"
+                      ? "❌ отказано"
+                      : "⏳ в ожидании"}
+                </td>
+
+                <td>
+                  <button
+                    className="accept-btn"
+                    onClick={() =>
+                      updateStatus(item._id, "accepted")
+                    }
+                  >
+                    принять
+                  </button>
+
+                  <button
+                    className="reject-btn"
+                    onClick={() =>
+                      updateStatus(item._id, "rejected")
+                    }
+                  >
+                    отменить
+                  </button>
+
+                  <button
+                    className="delete-btn"
+                    onClick={() =>
+                      deleteBooking(item._id)
+                    }
+                  >
+                    очистить
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* =========================
+          LOADING ANIMATION
+      ========================= */}
+      <style>
+        {`
+          @keyframes admin-loading-spin {
+            from {
+              transform: rotate(0deg);
+            }
+
+            to {
+              transform: rotate(360deg);
+            }
+          }
+        `}
+      </style>
+    </>
   );
 }
 
