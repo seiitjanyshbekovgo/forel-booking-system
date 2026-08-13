@@ -1,6 +1,6 @@
-import { Navigate, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { branches } from "../data/branches";
 
 function Admin() {
@@ -14,21 +14,35 @@ function Admin() {
   const [search, setSearch] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchBookings();
-  }, []);
+    let cancelled = false;
 
-  const fetchBookings = async () => {
-    try {
-      const res = await axios.get(
-        "https://forel-booking-system.onrender.com/bookings",
-      );
-      setBookings(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    const loadBookings = async () => {
+      try {
+        const res = await axios.get(
+          "https://forel-booking-system.onrender.com/bookings",
+        );
+
+        if (!cancelled) {
+          setBookings(res.data);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadBookings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (!isAuth) {
     return <Navigate to="/admin-login" />;
@@ -93,7 +107,7 @@ function Admin() {
 
   return (
     <div style={{ padding: "40px" }}>
-     <h1>{currentBranch?.name || "FOREL"}</h1>
+      <h1>{currentBranch?.name || "FOREL"}</h1>
 
       <div className="stats">
         <div>📋 все бронирование: {totalBookings}</div>
@@ -135,46 +149,63 @@ function Admin() {
         </thead>
 
         <tbody>
-          {filteredBookings.map((item) => (
-            <tr key={item._id}>
-              <td>{item.table}</td>
-              <td>{item.name}</td>
-              <td>{item.phone}</td>
-              <td>{item.date}</td>
-              <td>{item.time}</td>
-
-              <td>
-                {item.status === "accepted"
-                  ? "✅ принято"
-                  : item.status === "rejected"
-                    ? "❌ отказано"
-                    : "⏳ в ожидании"}
-              </td>
-
-              <td>
-                <button
-                  className="accept-btn"
-                  onClick={() => updateStatus(item._id, "accepted")}
+          <tbody>
+            {loading ? (
+              <tr>
+                <td
+                  colSpan="7"
+                  style={{
+                    textAlign: "center",
+                    padding: "50px",
+                    fontSize: "20px",
+                  }}
                 >
-                  принять
-                </button>
+                  ⏳ Брондолор жүктөлүүдө...
+                </td>
+              </tr>
+            ) : (
+              filteredBookings.map((item) => (
+                <tr key={item._id}>
+                  <td>{item.table}</td>
+                  <td>{item.name}</td>
+                  <td>{item.phone}</td>
+                  <td>{item.date}</td>
+                  <td>{item.time}</td>
 
-                <button
-                  className="reject-btn"
-                  onClick={() => updateStatus(item._id, "rejected")}
-                >
-                  отменить
-                </button>
+                  <td>
+                    {item.status === "accepted"
+                      ? "✅ принято"
+                      : item.status === "rejected"
+                        ? "❌ отказано"
+                        : "⏳ в ожидании"}
+                  </td>
 
-                <button
-                  className="delete-btn"
-                  onClick={() => deleteBooking(item._id)}
-                >
-                  очистить
-                </button>
-              </td>
-            </tr>
-          ))}
+                  <td>
+                    <button
+                      className="accept-btn"
+                      onClick={() => updateStatus(item._id, "accepted")}
+                    >
+                      принять
+                    </button>
+
+                    <button
+                      className="reject-btn"
+                      onClick={() => updateStatus(item._id, "rejected")}
+                    >
+                      отменить
+                    </button>
+
+                    <button
+                      className="delete-btn"
+                      onClick={() => deleteBooking(item._id)}
+                    >
+                      очистить
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
         </tbody>
       </table>
     </div>
