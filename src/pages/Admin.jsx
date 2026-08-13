@@ -1,6 +1,6 @@
-import { Navigate, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { branches } from "../data/branches";
 
 function Admin() {
@@ -52,8 +52,7 @@ function Admin() {
       (item.phone || "").includes(search) ||
       (item.table || "").toLowerCase().includes(search.toLowerCase());
 
-    const matchesDate =
-      selectedDate === "" || item.date === selectedDate;
+    const matchesDate = selectedDate === "" || item.date === selectedDate;
 
     return matchesSearch && matchesDate;
   });
@@ -116,6 +115,8 @@ function Admin() {
             right: 0,
             bottom: 0,
             background: "rgba(0, 0, 0, 0.25)",
+            backdropFilter: "blur(2px)",
+            WebkitBackdropFilter: "blur(2px)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -124,14 +125,47 @@ function Admin() {
         >
           <div
             style={{
-              width: "55px",
-              height: "55px",
-              border: "6px solid rgba(255, 255, 255, 0.5)",
-              borderTop: "6px solid white",
-              borderRadius: "50%",
-              animation: "admin-loading-spin 0.8s linear infinite",
+              background: "#fff",
+              padding: "28px 35px",
+              borderRadius: "16px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "12px",
+              boxShadow: "0 8px 30px rgba(0, 0, 0, 0.18)",
+              minWidth: "220px",
+              textAlign: "center",
             }}
-          />
+          >
+            <div
+              style={{
+                width: "50px",
+                height: "50px",
+                border: "5px solid #e5e7eb",
+                borderTop: "5px solid #2563eb",
+                borderRadius: "50%",
+                animation: "admin-loading-spin 0.8s linear infinite",
+              }}
+            />
+
+            <div
+              style={{
+                fontSize: "17px",
+                fontWeight: "600",
+              }}
+            >
+              Бронирования загружаются...
+            </div>
+
+            <div
+              style={{
+                fontSize: "14px",
+                color: "#666",
+              }}
+            >
+              Пожалуйста, подождите.
+            </div>
+          </div>
         </div>
       )}
 
@@ -184,56 +218,82 @@ function Admin() {
           </thead>
 
           <tbody>
-            {filteredBookings.map((item) => (
-              <tr key={item._id}>
-                <td>{item.table}</td>
+            {!loading && filteredBookings.length === 0 ? (
+              <tr>
+                <td
+                  colSpan="7"
+                  style={{
+                    textAlign: "center",
+                    padding: "55px 20px",
+                    fontSize: "18px",
+                    color: "#666",
+                  }}
+                >
+                  <div style={{ fontSize: "30px", marginBottom: "10px" }}>
+                    📋
+                  </div>
 
-                <td>{item.name}</td>
+                  <div style={{ fontWeight: "600" }}>
+                    Пока нет активных бронирований.
+                  </div>
 
-                <td>{item.phone}</td>
-
-                <td>{item.date}</td>
-
-                <td>{item.time}</td>
-
-                <td>
-                  {item.status === "accepted"
-                    ? "✅ принято"
-                    : item.status === "rejected"
-                      ? "❌ отказано"
-                      : "⏳ в ожидании"}
-                </td>
-
-                <td>
-                  <button
-                    className="accept-btn"
-                    onClick={() =>
-                      updateStatus(item._id, "accepted")
-                    }
+                  <div
+                    style={{
+                      marginTop: "6px",
+                      fontSize: "14px",
+                      color: "#888",
+                    }}
                   >
-                    принять
-                  </button>
-
-                  <button
-                    className="reject-btn"
-                    onClick={() =>
-                      updateStatus(item._id, "rejected")
-                    }
-                  >
-                    отменить
-                  </button>
-
-                  <button
-                    className="delete-btn"
-                    onClick={() =>
-                      deleteBooking(item._id)
-                    }
-                  >
-                    очистить
-                  </button>
+                    Новые бронирования появятся здесь.
+                  </div>
                 </td>
               </tr>
-            ))}
+            ) : (
+              filteredBookings.map((item) => (
+                <tr key={item._id}>
+                  <td>{item.table}</td>
+
+                  <td>{item.name}</td>
+
+                  <td>{item.phone}</td>
+
+                  <td>{item.date}</td>
+
+                  <td>{item.time}</td>
+
+                  <td>
+                    {item.status === "accepted"
+                      ? "✅ принято"
+                      : item.status === "rejected"
+                        ? "❌ отказано"
+                        : "⏳ в ожидании"}
+                  </td>
+
+                  <td>
+                    <button
+                      className="accept-btn"
+                      onClick={() => updateStatus(item._id, "accepted")}
+                    >
+                      принять
+                    </button>
+
+                    <button
+                      className="reject-btn"
+                      onClick={() => updateStatus(item._id, "rejected")}
+                    >
+                      отменить
+                    </button>
+
+                    <button
+                      className="delete-btn"
+                      onClick={() => deleteBooking(item._id)}
+                    >
+                      очистить
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
