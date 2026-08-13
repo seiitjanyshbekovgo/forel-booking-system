@@ -9,7 +9,7 @@ function AdminLogin() {
   const admins = [
     {
       login: "горький",
-      password: "123456",
+      password: "5555",
       branch: "gorkiy",
     },
     {
