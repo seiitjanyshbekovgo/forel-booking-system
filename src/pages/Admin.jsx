@@ -5,11 +5,19 @@ import { branches } from "../data/branches";
 
 function Admin() {
   const navigate = useNavigate();
-  const isAuth = sessionStorage.getItem("adminAuth");
-  const admin = JSON.parse(sessionStorage.getItem("admin"));
 
-  const adminBranch = admin.branch;
-  const currentBranch = branches.find((branch) => branch.slug === adminBranch);
+  const isAuth = sessionStorage.getItem("adminAuth");
+  const adminData = sessionStorage.getItem("admin");
+
+  // admin маалыматтарын коопсуз окуйбуз
+  let admin = null;
+
+  try {
+    admin = adminData ? JSON.parse(adminData) : null;
+  } catch (error) {
+    console.log("Ошибка чтения данных администратора:", error);
+    admin = null;
+  }
 
   const [search, setSearch] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -18,6 +26,9 @@ function Admin() {
   // Loading
   const [loading, setLoading] = useState(true);
 
+  // =========================
+  // БРОНДОРДУ ЖҮКТӨӨ
+  // =========================
   const fetchBookings = async () => {
     setLoading(true);
 
@@ -35,13 +46,28 @@ function Admin() {
   };
 
   useEffect(() => {
-    fetchBookings();
-  }, []);
+    // Админ авторизациядан өткөн болсо гана брондорду жүктөйбүз
+    if (isAuth && admin) {
+      fetchBookings();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuth, adminData]);
 
-  if (!isAuth) {
-    return <Navigate to="/admin-login" />;
+  // =========================
+  // АВТОРИЗАЦИЯНЫ ТЕКШЕРҮҮ
+  // =========================
+  if (!isAuth || !admin) {
+    return <Navigate to="/admin-login" replace />;
   }
 
+  const adminBranch = admin.branch;
+
+  const currentBranch = branches.find((branch) => branch.slug === adminBranch);
+
+  // =========================
+  // ФИЛЬТРАЦИЯ
+  // =========================
   const filteredBookings = bookings.filter((item) => {
     if (item.branch !== adminBranch) {
       return false;
@@ -57,6 +83,9 @@ function Admin() {
     return matchesSearch && matchesDate;
   });
 
+  // =========================
+  // СТАТИСТИКА
+  // =========================
   const totalBookings = filteredBookings.length;
 
   const acceptedBookings = filteredBookings.filter(
@@ -71,33 +100,50 @@ function Admin() {
     (item) => item.status === "rejected",
   ).length;
 
+  // =========================
+  // ВЫХОД
+  // =========================
   const handleLogout = () => {
     sessionStorage.removeItem("adminAuth");
+    sessionStorage.removeItem("admin");
+
     navigate("/admin-login");
   };
 
+  // =========================
+  // ИЗМЕНЕНИЕ СТАТУСА
+  // =========================
   const updateStatus = async (id, status) => {
     try {
+      setLoading(true);
+
       await axios.put(
         `https://forel-booking-system.onrender.com/booking/${id}/status`,
         { status },
       );
 
-      fetchBookings();
+      await fetchBookings();
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
+  // =========================
+  // УДАЛЕНИЕ БРОНИ
+  // =========================
   const deleteBooking = async (id) => {
     try {
+      setLoading(true);
+
       await axios.delete(
         `https://forel-booking-system.onrender.com/booking/${id}`,
       );
 
-      fetchBookings();
+      await fetchBookings();
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
