@@ -16,26 +16,40 @@ function TableDetails() {
   const [isPaid, setIsPaid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  //
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const branch = searchParams.get("branch");
+
   const currentBranch = branches.find((item) => item.slug === branch);
-  //
+
   const handleBooking = async () => {
+    // Экинчи жолу басууга жол бербейт
     if (loading) return;
+
+    // =========================
+    // БОШ ТАЛААЛАР
+    // =========================
 
     if (!name || !phone || !date || !time) {
       alert("Заполните все поля.");
       return;
     }
 
+    // =========================
+    // ПРЕДОПЛАТА
+    // =========================
+
     if (!isPaid) {
       alert("Пожалуйста, подтвердите внесение предоплаты!");
       return;
     }
+
+    // =========================
+    // ТЕЛЕФОН
+    // =========================
 
     if (!phone.startsWith("+996")) {
       alert("Номер телефона должен начинаться с +996!");
@@ -43,9 +57,13 @@ function TableDetails() {
     }
 
     if (phone.length !== 13) {
-      alert("Не правильный формат номер телефона!");
+      alert("Неправильный формат номера телефона!");
       return;
     }
+
+    // =========================
+    // ДАТА
+    // =========================
 
     const today = new Date().toISOString().split("T")[0];
 
@@ -53,6 +71,10 @@ function TableDetails() {
       alert("Нельзя бронировать на прошедшую дату!");
       return;
     }
+
+    // =========================
+    // LOADING
+    // =========================
 
     setLoading(true);
 
@@ -66,39 +88,15 @@ function TableDetails() {
         time,
         status: "pending",
       };
+
       console.log("NEW BOOKING:", newBooking);
 
-      const oldBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-
-      const existingBooking = oldBookings.find((item) => {
-        if (
-          item.table !== table.name ||
-          item.date !== date ||
-          item.status !== "accepted"
-        ) {
-          return false;
-        }
-
-        const bookingTime = new Date(`2000-01-01T${item.time}`);
-        const newTime = new Date(`2000-01-01T${time}`);
-
-        const diffHours = Math.abs(newTime - bookingTime) / (1000 * 60 * 60);
-
-        return diffHours < 4;
-      });
-
-      if (existingBooking) {
-        alert("Этот стол уже забронирован на выбранные дату и время!");
-        return;
-      }
-
-      oldBookings.push(newBooking);
-
-      localStorage.setItem("bookings", JSON.stringify(oldBookings));
+      // =========================
+      // СЕРВЕР
+      // =========================
 
       const response = await fetch(
         "https://forel-booking-system.onrender.com/booking",
-        // "http://localhost:8000/booking",
         {
           method: "POST",
           headers: {
@@ -108,9 +106,33 @@ function TableDetails() {
         },
       );
 
+      // JSON жоопту окуйбуз
+      const result = await response.json();
+
+      // =========================
+      // ЭГЕР СЕРВЕР КАТА БЕРСЕ
+      // =========================
+
       if (!response.ok) {
-        throw new Error("Ошибка сервера");
+        alert(result.message || "Не удалось оформить бронирование.");
+
+        return;
       }
+
+      // =========================
+      // СЕРВЕР ИЙГИЛИКТҮҮ КАБЫЛ АЛДЫ
+      // ЭМИ ГАНА LOCALSTORAGE
+      // =========================
+
+      const oldBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+      oldBookings.push(newBooking);
+
+      localStorage.setItem("bookings", JSON.stringify(oldBookings));
+
+      // =========================
+      // SUCCESS
+      // =========================
 
       setShowSuccess(true);
 
@@ -119,18 +141,29 @@ function TableDetails() {
         navigate("/");
       }, 20000);
 
+      // =========================
+      // ФОРМАНЫ ТАЗАЛОО
+      // =========================
+
       setName("");
       setPhone("+996");
       setDate("");
       setTime("");
       setIsPaid(false);
     } catch (error) {
-      console.error(error);
-      alert("Ошибка при бронировании. Попробуйте еще раз.");
+      console.error("BOOKING ERROR:", error);
+
+      alert("Не удалось связаться с сервером. Попробуйте еще раз.");
     } finally {
+      // Эмне болсо да loading өчөт
       setLoading(false);
     }
   };
+
+  // =========================
+  // ФИЛИАЛДЫН СТОЛДОРУ
+  // =========================
+
   let tables = [];
 
   switch (branch) {
@@ -153,11 +186,35 @@ function TableDetails() {
     default:
       tables = [];
   }
+
   const table = tables.find((item) => item.id === Number(id));
+
+  // Эгер стол табылбаса
+  if (!table) {
+    return (
+      <>
+        <Header />
+
+        <div
+          style={{
+            padding: "50px",
+            textAlign: "center",
+          }}
+        >
+          <h2>Стол не найден.</h2>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       <Header />
+
+      {/* =========================
+          LOADING OVERLAY
+      ========================= */}
+
       {loading && (
         <div className="loading-overlay">
           <div className="loading-box">
@@ -165,10 +222,11 @@ function TableDetails() {
 
             <h2>Бронь оформляется...</h2>
 
-            <p>Пожалуйста, подождите</p>
+            <p>Пожалуйста, не закрывайте страницу.</p>
           </div>
         </div>
       )}
+
       <div style={{ padding: "50px" }}>
         <h1>{table.name}</h1>
 
@@ -215,13 +273,17 @@ function TableDetails() {
                 setPhone(value);
               }}
             />
+
             <label>Дата бронирования</label>
+
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
             />
+
             <label>Время бронирования</label>
+
             <input
               type="time"
               value={time}
@@ -236,13 +298,14 @@ function TableDetails() {
                 marginBottom: "15px",
               }}
             >
-              💳 Предоплата: {currentBranch.prepayment} сом
+              💳 Предоплата: {currentBranch?.prepayment ?? 0} сом
               <br />
-              MBANK: {currentBranch.mbank}
+              MBANK: {currentBranch?.mbank ?? ""}
               <br />
               <br />
               После проверки предоплаты администратор подтвердит бронирование.
             </div>
+
             <label
               style={{
                 display: "flex",
@@ -259,15 +322,16 @@ function TableDetails() {
                 onChange={(e) => setIsPaid(e.target.checked)}
               />
 
-              {/* <span>Я оплатил предоплату.</span> */}
+              {/* <span>Оплату подтвердил</span> */}
             </label>
 
             <button onClick={handleBooking} disabled={loading}>
-              {loading ? "⏳ Брондолууда..." : "Бронировать"}
+              {loading ? "⏳ «Бронь оформляется...» ✅" : "Бронировать"}
             </button>
           </div>
         </div>
       </div>
+
       {showSuccess && <SuccessModal />}
     </>
   );
