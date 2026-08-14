@@ -8,22 +8,22 @@ function AdminLogin() {
   const navigate = useNavigate();
   const admins = [
     {
-      login: "горький",
+      login: "Горький",
       password: "5555",
       branch: "gorkiy",
     },
     {
-      login: "жал",
+      login: "Жал",
       password: "123456",
       branch: "jal",
     },
     {
-      login: "ахунбаева",
+      login: "Ахунбаева",
       password: "123456",
       branch: "axun",
     },
     {
-      login: "шопокова",
+      login: "Шопокова",
       password: "123456",
       branch: "shopok",
     },
