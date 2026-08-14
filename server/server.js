@@ -1,7 +1,7 @@
-import express from "express";
-import cors from "cors";
 import axios from "axios";
+import cors from "cors";
 import dotenv from "dotenv";
+import express from "express";
 import mongoose from "mongoose";
 import Booking from "./models/Booking.js";
 
@@ -21,14 +21,45 @@ app.get("/", (req, res) => {
   res.send("Server is working");
 });
 
-// Жаңы бронь кошуу
 app.post("/booking", async (req, res) => {
   console.log("REQ BODY:", req.body);
+
   try {
     console.log("BOOKING REQUEST RECEIVED");
 
-
     const { branch, table, name, phone, date, time } = req.body;
+
+    if (!branch || !table || !name || !phone || !date || !time) {
+      return res.status(400).json({
+        success: false,
+        message: "Заполните все данные для бронирования.",
+      });
+    }
+
+    const existingBookings = await Booking.find({
+      branch,
+      table,
+      date,
+      status: { $ne: "rejected" },
+    });
+
+    const newTime = new Date(`2000-01-01T${time}`);
+
+    const hasConflict = existingBookings.some((item) => {
+      const bookingTime = new Date(`2000-01-01T${item.time}`);
+
+      const diffHours = Math.abs(newTime - bookingTime) / (1000 * 60 * 60);
+
+      return diffHours <= 4;
+    });
+
+    if (hasConflict) {
+      return res.status(409).json({
+        success: false,
+        message:
+          "Этот стол уже забронирован на выбранное время. Выберите другое время.",
+      });
+    }
 
     const booking = new Booking({
       branch,
@@ -37,6 +68,7 @@ app.post("/booking", async (req, res) => {
       phone,
       date,
       time,
+      status: "pending",
     });
 
     await booking.save();
@@ -61,14 +93,21 @@ app.post("/booking", async (req, res) => {
       },
     );
 
-    res.json({ success: true });
+    res.json({
+      success: true,
+      message: "Бронь успешно создана.",
+      booking,
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false });
+
+    res.status(500).json({
+      success: false,
+      message: "Ошибка сервера.",
+    });
   }
 });
 
-// Бардык брондорду алуу
 app.get("/bookings", async (req, res) => {
   try {
     const bookings = await Booking.find().sort({ _id: -1 });
