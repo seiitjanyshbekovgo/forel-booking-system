@@ -13,7 +13,7 @@ function TableDetails() {
   const [phone, setPhone] = useState("+996");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [isPaid, setIsPaid] = useState(false);
+  const [prepaymentAmount, setPrepaymentAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -42,8 +42,20 @@ function TableDetails() {
     // ПРЕДОПЛАТА
     // =========================
 
-    if (!isPaid) {
-      alert("Пожалуйста, подтвердите внесение предоплаты!");
+    if (prepaymentAmount === "" || prepaymentAmount === null) {
+      alert("Введите сумму предоплаты.");
+      return;
+    }
+
+    const amount = Number(prepaymentAmount);
+
+    if (Number.isNaN(amount)) {
+      alert("Введите корректную сумму предоплаты.");
+      return;
+    }
+
+    if (amount < 1000) {
+      alert("Минимальная сумма предоплаты — 1000 сом.");
       return;
     }
 
@@ -86,6 +98,7 @@ function TableDetails() {
         phone,
         date,
         time,
+        prepaymentAmount: amount,
         status: "pending",
       };
 
@@ -97,6 +110,8 @@ function TableDetails() {
 
       const response = await fetch(
         "https://forel-booking-system.onrender.com/booking",
+        //  "http://localhost:8000/booking"
+        // "http://localhost:8000/booking",
         {
           method: "POST",
           headers: {
@@ -106,11 +121,10 @@ function TableDetails() {
         },
       );
 
-      // JSON жоопту окуйбуз
       const result = await response.json();
 
       // =========================
-      // ЭГЕР СЕРВЕР КАТА БЕРСЕ
+      // ЕСЛИ СЕРВЕР КАТА БЕРСЕ
       // =========================
 
       if (!response.ok) {
@@ -120,13 +134,13 @@ function TableDetails() {
       }
 
       // =========================
-      // СЕРВЕР ИЙГИЛИКТҮҮ КАБЫЛ АЛДЫ
-      // ЭМИ ГАНА LOCALSTORAGE
+      // LOCALSTORAGE
+      // СЕРВЕР ИЙГИЛИКТҮҮ БОЛГОНДОН КИЙИН
       // =========================
 
       const oldBookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
-      oldBookings.push(newBooking);
+      oldBookings.push(result.booking || newBooking);
 
       localStorage.setItem("bookings", JSON.stringify(oldBookings));
 
@@ -149,13 +163,12 @@ function TableDetails() {
       setPhone("+996");
       setDate("");
       setTime("");
-      setIsPaid(false);
+      setPrepaymentAmount("");
     } catch (error) {
       console.error("BOOKING ERROR:", error);
 
       alert("Не удалось связаться с сервером. Попробуйте еще раз.");
     } finally {
-      // Эмне болсо да loading өчөт
       setLoading(false);
     }
   };
@@ -189,7 +202,10 @@ function TableDetails() {
 
   const table = tables.find((item) => item.id === Number(id));
 
-  // Эгер стол табылбаса
+  // =========================
+  // СТОЛ ТАБЫЛБАСА
+  // =========================
+
   if (!table) {
     return (
       <>
@@ -290,15 +306,20 @@ function TableDetails() {
               onChange={(e) => setTime(e.target.value)}
             />
 
+            {/* =========================
+                ПРЕДОПЛАТА
+            ========================= */}
+
             <div
               style={{
                 background: "#b16666",
                 padding: "15px",
                 borderRadius: "10px",
                 marginBottom: "15px",
+                lineHeight: "1.6",
               }}
             >
-              💳 Предоплата: {currentBranch?.prepayment ?? 0} сом
+              💳 Предоплата: строго от 1000 сом
               <br />
               MBANK: {currentBranch?.mbank ?? ""}
               <br />
@@ -308,25 +329,27 @@ function TableDetails() {
 
             <label
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                gap: "10px",
+                display: "block",
                 width: "100%",
-                marginBottom: "20px",
+                marginBottom: "8px",
+                fontWeight: "600",
               }}
             >
-              <input
-                type="checkbox"
-                checked={isPaid}
-                onChange={(e) => setIsPaid(e.target.checked)}
-              />
-
-              {/* <span>Оплату подтвердил</span> */}
+              Сумма предоплаты
+              <p>напишите сколько вы оставили предоплата</p>
             </label>
 
+            <input
+              type="number"
+              min="1000"
+              step="50"
+              placeholder="Например: 1500"
+              value={prepaymentAmount}
+              onChange={(e) => setPrepaymentAmount(e.target.value)}
+            />
+
             <button onClick={handleBooking} disabled={loading}>
-              {loading ? "⏳ «Бронь оформляется...» ✅" : "Бронировать"}
+              {loading ? "Бронь оформляется..." : "Бронировать"}
             </button>
           </div>
         </div>

@@ -8,9 +8,13 @@ import table7 from "../../assets/gorkiy/table7.jpg";
 import table8 from "../../assets/gorkiy/table8.jpg";
 import table9 from "../../assets/gorkiy/table9.jpg";
 import table10 from "../../assets/gorkiy/table10.jpg";
+// import table20 from "../../assets/gorkiy/table10.jpg";
 import table11 from "../../assets/gorkiy/table11.jpg";
 import vip from "../../assets/gorkiy/vip.jpg";
-import bigCabin from "../../assets/gorkiy/bigCabin.jpg";
+// import bigCabin from "../../assets/gorkiy/bigCabin.jpg";
+import table13 from "../../assets/gorkiy/table13.jpg"
+import table14 from "../../assets/gorkiy/table14.jpg"
+import table20 from "../../assets/gorkiy/table20.jpg"
 
 export const gorkiyTables = [
     {
@@ -91,7 +95,14 @@ export const gorkiyTables = [
       image: table11,
     },
     {
-      id: 12,
+      id:12 ,
+      name: "возле намазкана 20 стол",
+      seats: "8 местный",
+      location: "строго по количество гостей",
+      image: table20,
+    },
+    {
+      id: 13,
       name: "VIP Кабина",
       seats: "14 местный",
       location: "строго по количество гостей",
@@ -99,11 +110,20 @@ export const gorkiyTables = [
       image: vip,
     },
     {
-      id: 13,
-      name: "большая кабина",
-      seats: "25 местный",
+      id: 14,
+      name: "полу закрытая кабина 13 стол",
+      seats: "0т 7 до 10 мест",
       // location: "для компашка",
       locations: "строго по количество гостей",
-      image: bigCabin,
+      image: table13,
+    },
+
+    {
+      id: 15,
+      name: "полу закрытая кабина 14 стол",
+      seats: "0т 7 до 10 мест",
+      // location: "для компашка",
+      locations: "строго по количество гостей",
+      image: table14,
     },
   ];

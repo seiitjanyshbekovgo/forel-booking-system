@@ -18,10 +18,6 @@ function Admin() {
   // Loading
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchBookings();
-  }, []);
-
   const fetchBookings = async () => {
     setLoading(true);
 
@@ -37,6 +33,10 @@ function Admin() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
 
   if (!isAuth) {
     return <Navigate to="/admin-login" />;
@@ -212,6 +212,7 @@ function Admin() {
               <th>Телефон</th>
               <th>Дата</th>
               <th>Время</th>
+              <th>Предоплата</th>
               <th>Статус</th>
               <th>Процесс</th>
             </tr>
@@ -221,7 +222,7 @@ function Admin() {
             {!loading && filteredBookings.length === 0 ? (
               <tr>
                 <td
-                  colSpan="7"
+                  colSpan="8"
                   style={{
                     textAlign: "center",
                     padding: "55px 20px",
@@ -229,7 +230,12 @@ function Admin() {
                     color: "#666",
                   }}
                 >
-                  <div style={{ fontSize: "30px", marginBottom: "10px" }}>
+                  <div
+                    style={{
+                      fontSize: "30px",
+                      marginBottom: "10px",
+                    }}
+                  >
                     📋
                   </div>
 
@@ -260,6 +266,15 @@ function Admin() {
                   <td>{item.date}</td>
 
                   <td>{item.time}</td>
+
+                  <td>
+                    {item.prepaymentAmount !== undefined &&
+                    item.prepaymentAmount !== null ? (
+                      <strong>{item.prepaymentAmount} сом</strong>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
 
                   <td>
                     {item.status === "accepted"

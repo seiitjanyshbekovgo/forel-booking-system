@@ -73,16 +73,47 @@ app.post("/booking", async (req, res) => {
   console.log("BOOKING REQUEST RECEIVED");
 
   try {
-    const { branch, table, name, phone, date, time } = req.body;
+    const { branch, table, name, phone, date, time, prepaymentAmount } =
+      req.body;
 
     // =========================
     // ПРОВЕРКА ДАННЫХ
     // =========================
 
-    if (!branch || !table || !name || !phone || !date || !time) {
+    if (
+      !branch ||
+      !table ||
+      !name ||
+      !phone ||
+      !date ||
+      !time ||
+      prepaymentAmount === undefined ||
+      prepaymentAmount === null ||
+      prepaymentAmount === ""
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Заполните все данные для бронирования.",
+        message: "Заполните все необходимые поля.",
+      });
+    }
+
+    // =========================
+    // ПРОВЕРКА ПРЕДОПЛАТЫ
+    // =========================
+
+    const amount = Number(prepaymentAmount);
+
+    if (Number.isNaN(amount)) {
+      return res.status(400).json({
+        success: false,
+        message: "Введите корректную сумму предоплаты.",
+      });
+    }
+
+    if (amount < 1000) {
+      return res.status(400).json({
+        success: false,
+        message: "Минимальная сумма предоплаты — 1000 сом.",
       });
     }
 
@@ -136,7 +167,7 @@ app.post("/booking", async (req, res) => {
         `Существующее время: ${item.time}, новое время: ${time}, разница: ${diffHours} часов`,
       );
 
-      // 4 часа включительно — нельзя
+      // 4 саат включительно — нельзя
       // больше 4 часов — можно
       return diffHours <= 4;
     });
@@ -166,6 +197,7 @@ app.post("/booking", async (req, res) => {
       phone,
       date,
       time,
+      prepaymentAmount: amount,
       status: "pending",
     });
 
@@ -183,13 +215,12 @@ app.post("/booking", async (req, res) => {
 📌 Новый бронь
 
 🏢 Филиал: ${branch}
-
 🍽 Стол: ${table}
 👤 Имя: ${name}
 📞 Телефон: ${phone}
 📅 Дата: ${date}
 🕒 Время: ${time}
-
+💳 Предоплата: ${amount} сом
 ⏳ Статус: в ожидании
 `;
 
@@ -211,9 +242,8 @@ app.post("/booking", async (req, res) => {
         telegramError.response?.data || telegramError.message,
       );
 
-      // ВАЖНО:
-      // Даже если Telegram не сработал,
-      // бронь уже сохранена в MongoDB.
+      // Telegram иштебей калса дагы,
+      // бронь MongoDBде сакталган бойдон калат.
     }
 
     // =========================
